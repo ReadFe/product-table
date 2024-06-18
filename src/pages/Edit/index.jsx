@@ -6,38 +6,45 @@ import { useState } from "react";
 const Edit = () => {
   const location = useLocation();
   const { item } = location.state;
-  const [data, setData] = useState({
-    name: item.name,
-    price: item.price,
-    stock: item.stock,
-    status: item.status,
-    image_url: null // Menggunakan null sebagai nilai default untuk input gambar
+  const [formData, setFormData] = useState({
+      name: item.name,
+      price: item.price,
+      stock: item.stock,
+      status: item.status,
+      image_url: item.image_url
   });
 
-  const handleSubmit = async (event) => {
-    console.log(data)
-    event.preventDefault();
-    try {
-      const response = await axios.put(`http://localhost:3000/api/v4/product/${item._id}`, data, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      console.log('Response from API:', response.data);
-    } catch (error) {
-      console.error('Error sending data to API:', error);
-    }
+  const handleImageChange = async (image) => {
+    const newFormData = { ...formData };
+    newFormData.image_url = image.target.files[0];
+      setFormData(newFormData);
   };
 
-  const handleChange = (event) => {
-    console.log(event)
-    const { name, value, type, checked, files } = event.target;
-    const newValue = type === 'checkbox' ? checked : type === 'file' ? files[0] : value;
+  const handleInputChange = (event) => {
+      const { name, value } = event.target;
+      setFormData({ ...formData, [name]: value });
+  };
 
-    setData({
-      ...data,
-      [name]: newValue
-    });
+  const handleSubmit = async (event) => {
+      event.preventDefault();
+      const formDataToSubmit = new FormData();
+      formDataToSubmit.append('image', formData.image);
+      formDataToSubmit.append('name', formData.name);
+      formDataToSubmit.append('price', formData.price);
+      formDataToSubmit.append('stock', formData.stock);
+      formDataToSubmit.append('status', formData.status);
+
+      try {
+          await axios.put(`http://localhost:3000/api/v4/product/${item._id}`, formDataToSubmit, {
+              headers: {
+                  'Content-Type': 'multipart/form-data'
+              }
+          });
+          alert('Data berhasil disimpan');
+      } catch (error) {
+          console.error('Kesalahan unggah gambar:', error);
+          alert('Terjadi kesalahan saat menyimmpan data');
+      }
   };
 
   return (
@@ -46,11 +53,11 @@ const Edit = () => {
         <h2>Edit Produk</h2>
         <br />
         <form onSubmit={handleSubmit}>
-          <Input name="name" type="text" placeholder="Nama Produk..." label="Nama" value={data.name} onChange={handleChange} />
-          <Input name="price" type="number" placeholder="Harga Produk..." label="Harga" value={data.price} onChange={handleChange}/>
-          <Input name="stock" type="number" placeholder="Stock Produk..." label="Stock" value={data.stock} onChange={handleChange}/>
-          <Input name="image_url" type="file" label="Gambar" onChange={handleChange}/>
-          <Input name="status" type="checkbox" label="Active" checked={data.status} onChange={handleChange}/>
+          <Input name="name" type="text" placeholder="Nama Produk..." label="Nama" defaultValue={item.name} onChange={handleInputChange} />
+          <Input name="price" type="number" placeholder="Harga Produk..." label="Harga" defaultValue={item.price} onChange={handleInputChange}/>
+          <Input name="stock" type="number" placeholder="Stock Produk..." label="Stock" defaultValue={item.stock} onChange={handleInputChange}/>
+          <Input name="image" type="file" label="Gambar" onChange={handleImageChange}/>
+          <Input name="status" type="checkbox" label="Active" defaultChecked={item.status} onChange={handleInputChange}/>
           <button type="submit" className="btn btn-primary">Simpan</button>
         </form>
       </div>
