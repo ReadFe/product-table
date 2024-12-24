@@ -5,6 +5,7 @@ import Edit from './pages/Edit';
 import Home from './pages/Home';
 import Tambah from './pages/Tambah';
 
+
 const App = () => {
 
   return (

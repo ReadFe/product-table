@@ -1,35 +1,17 @@
 import { Link } from 'react-router-dom';
 import './index.scss';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { fetchData } from '../../store/dataReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
+import { apiClient } from '../../utils/api';
 
 const Home = () => {
 
   const [search, setSearch] = useState([]);
-  const [data, setData] = useState([]);
-  const [input, setInput] = useState('')
-
-
-  useEffect(() => {
-    axios.get('http://localhost:3000/api/v4/product')
-    .then(response => {
-      setData(response.data);
-    })
-    .catch(error => {
-      console.log('Error:', error);
-    });
-  }, []);
-
-  const getData = () => {
-    axios.get('http://localhost:3000/api/v4/product')
-    .then(response => {
-      setData(response.data);
-      console.log(search)
-    })
-    .catch(error => {
-      console.log('Error:', error);
-    });
-  }
+  const [input, setInput] = useState('');
+  const dispatch = useDispatch();
+  const data = useSelector((state) => state.products.products)
 
   const Search = (event, data) => {
     setInput(event)
@@ -39,20 +21,34 @@ const Home = () => {
     setSearch(filteredData)
   }
 
-  const Delete = async (item) => {
-
-    const confirmation = window.confirm('Apakah Anda yakin ingin menghapus item ini?');
-
-    if (confirmation) {
+  const Delete = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
         try {
-            await axios.delete(`http://localhost:3000/api/v4/product/${item}`);
-            alert('Item berhasil dihapus');
-            getData();
-        } catch (err) {
-            alert('Gagal menghapus item');
+          await apiClient.delete(`/api/product/${id}`)
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success"
+          });
+          dispatch(fetchData())
+        } catch (error) {
+          Swal.fire({
+            title: "Error!",
+            text: error.message,
+            icon: "error"
+          });
         }
-    }
-    return null;
+      }
+    });
   }
 
   const mapData = item => (
@@ -67,6 +63,10 @@ const Home = () => {
       </td>
     </tr>
   )
+
+  useEffect(() => {
+    dispatch(fetchData())
+  }, [dispatch]);
 
   return(
     <div className="main">

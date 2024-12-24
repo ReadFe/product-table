@@ -1,7 +1,8 @@
 import { useLocation } from "react-router-dom";
 import Input from "../../components/Input";
-import axios from "axios";
 import { useState } from "react";
+import { apiClient } from "../../utils/api";
+import Swal from "sweetalert2";
 
 const Edit = () => {
   const location = useLocation();
@@ -35,15 +36,22 @@ const Edit = () => {
       formDataToSubmit.append('status', formData.status);
 
       try {
-          await axios.put(`http://localhost:3000/api/v4/product/${item._id}`, formDataToSubmit, {
+          await apiClient.put(`/api/product/${item._id}`, formDataToSubmit, {
               headers: {
                   'Content-Type': 'multipart/form-data'
               }
           });
-          alert('Data berhasil disimpan');
+          Swal.fire({
+            title: "Updated!",
+            text: "Your file has been updated.",
+            icon: "success"
+          });
       } catch (error) {
-          console.error('Kesalahan unggah gambar:', error);
-          alert('Terjadi kesalahan saat menyimmpan data');
+          Swal.fire({
+            title: "Failed to update!",
+            text: error.message,
+            icon: "error"
+          });
       }
   };
 

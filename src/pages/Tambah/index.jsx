@@ -1,9 +1,11 @@
-import axios from 'axios';
 import { useState } from 'react';
 import Input from '../../components/Input';
 import './index.scss';
 import * as Validator from 'validatorjs';
 import ShowError from '../../components/Error/show';
+import { apiClient } from '../../utils/api';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const Tambah = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +18,8 @@ const Tambah = () => {
   const [errPrice, setErrPrice] = useState()
   const [errStock, setErrStock] = useState()
   const [errImage, setErrImage] = useState()
+
+  const navigate = useNavigate();
 
   const handleInputChange = (event) => {
     const {name, value} = event.target;
@@ -41,8 +45,8 @@ const Tambah = () => {
     let data = {name, price, stock, image};
     
     let rules = {
-      name: 'required|min:4',
-      price: 'required|min:3',
+      name: 'required',
+      price: 'required',
       stock: 'required',
       image: 'required'
     };
@@ -63,12 +67,19 @@ const Tambah = () => {
       formDataToSubmit.append('status', formData.status);
   
       try {
-          await axios.post(`http://localhost:3000/api/v4/product`, formDataToSubmit);
-          alert('Data berhasil disimpan');
-          
+          await apiClient.post(`/api/product`, formDataToSubmit);
+          Swal.fire({
+            title: "Success!",
+            text: "Your file has been added.",
+            icon: "success"
+          });
+          navigate('/')
       } catch (error) {
-          console.error('Kesalahan unggah gambar:', error);
-          alert('Terjadi kesalahan saat menyimmpan data');
+          Swal.fire({
+            title: "Failed!",
+            text: error.message,
+            icon: "failed"
+          });
       }
     }
   };
@@ -97,7 +108,7 @@ const Tambah = () => {
           }
           <Input name="status" type="checkbox" label="Active" onChange={handleCheckChange}/>
           
-          <button type="submit" className="btn btn-primary">Simpan</button>
+          <button type='submit' className="btn btn-primary">Simpan</button>
         </form>
       </div>
     </div>
