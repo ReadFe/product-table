@@ -5,6 +5,7 @@ import { fetchData } from '../../store/dataReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { apiClient } from '../../utils/api';
+import { formatToIDR } from '../../utils/formatToIDR';
 
 const Home = () => {
 
@@ -51,15 +52,15 @@ const Home = () => {
     });
   }
 
-  const mapData = item => (
+  const mapData = (item, i) => (
     <tr key={item._id}>
-      <td>{item._id}</td>
+      <td>{i + 1}</td>
       <td>{item.name}</td>
-      <td className="text-right">{item.price}</td>
-      <td className="text-center">
+      <td className="text-right">{formatToIDR(item.price)}</td>
+      <td className="opt-btn text-center">
         <Link to= "/detail" state={{item}} className="btn btn-sm btn-info">Detail</Link>
         <Link to="/edit" state={{item}} className="btn btn-sm btn-warning">Edit</Link>
-        <Link to="#" onClick={() => Delete(item._id)} className="btn btn-sm btn-danger">Delete</Link>
+        <button onClick={() => Delete(item._id)} className="btn btn-sm btn-danger">Delete</button>
       </td>
     </tr>
   )
@@ -70,14 +71,14 @@ const Home = () => {
 
   return(
     <div className="main">
-      <Link to="/tambah" className="btn btn-primary">Tambah Produk</Link>
+      <Link to="/tambah" className="add-btn btn btn-primary">Tambah Produk</Link>
       <div className="search">
         <input type="text" placeholder="Masukan kata kunci..." onChange={e => Search(e.target.value, data)} />
       </div>
       <table className="table">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>No</th>
             <th>Name</th>
             <th className="text-right">Price</th>
             <th className="text-center">Action</th>
@@ -87,7 +88,7 @@ const Home = () => {
           { input.length > 0 
             ? (search.length === 0 
               ? <tr>
-                <td className='text-center'> data tidak ditemukan</td>
+                <td className='text-center'> Data tidak ditemukan</td>
               </tr>
               : search.map(mapData)
             ) 

@@ -1,5 +1,5 @@
 .main {
-  margin: auto 150px;
+  margin: auto 10%;
   margin-top: 30px;
   min-height: 500px;
   box-shadow: 1px 1px 5px rgba($color: #000000, $alpha: .3);
@@ -57,5 +57,30 @@
     &:focus {
       outline: none;
     }
+  }
+}
+
+
+@media only screen and (max-width: 612px) {
+  .main {
+    margin: auto 0;
+  }
+
+  .add-btn {
+    display: none;
+  }
+
+  .search {
+    float: none;
+
+    input[type=text] {
+      width: 100%
+    }
+  }
+
+  .opt-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
   }
 }

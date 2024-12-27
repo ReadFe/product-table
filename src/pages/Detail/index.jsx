@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import './index.scss';
+import { formatToIDR } from "../../utils/formatToIDR";
 
 
 function Detail() {
@@ -15,7 +16,7 @@ function Detail() {
         <tbody>
           <tr>
             <td>ID</td>
-            <td>: {item._id}</td>
+            <td>{item._id}</td> 
           </tr>
           <tr>
             <td>Name</td>
@@ -23,7 +24,7 @@ function Detail() {
           </tr>
           <tr>
             <td>Price</td>
-            <td>: {item.price}</td>
+            <td>: {formatToIDR(item.price)}</td>
           </tr>
           <tr>
             <td>Stock</td>

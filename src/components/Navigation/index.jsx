@@ -5,7 +5,7 @@ const Navigation = () => {
   return (
     <div>
       <div className="navbar">
-        <h4 className="navbar-brand">React x Express</h4>
+        <h4 className="navbar-brand">Stock Library</h4>
         <ul className="link-wrapper">
           <li className="link">
             <NavLink to="/">Home</NavLink>
